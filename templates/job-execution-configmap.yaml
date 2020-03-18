@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "integration-manager.job-execution.fullname" . }}
+  labels:
+    app: integration-manager
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+data:
+  application.properties: |
+    #job-execution specific properties
+    job.timeOut={{ .Values.jobTimeOut }}
+    {{- if .Values.jobExecution.extraConfig }}
+    {{ .Values.jobExecution.extraConfig | indent 4 | trim }}
+    {{- end }}

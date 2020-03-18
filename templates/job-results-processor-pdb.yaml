@@ -1,0 +1,18 @@
+{{- if .Values.jobResultsProcessor.pdb }}
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "integration-manager.job-results-processor.fullname" . }}
+  labels:
+    app: integration-manager
+    component: job-results-processor
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: integration-manager
+      component: job-results-processor
+      release: {{ .Release.Name }}
+  {{ toYaml .Values.jobResultsProcessor.pdb | indent 2 | trim }}
+{{- end }}

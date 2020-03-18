@@ -1,0 +1,390 @@
+# Since our images are in a private repository, a docker registry secret will need to be created in advance to access our repo
+# This secret must be available in the same namespace where the helm chart will be installed to.
+# kubectl create secret docker-registry actian-registrykey --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+# Populate imagePullSecrets as follows once set up:
+#imagePullSecrets:
+#  - actian-registrykey
+imagePullSecrets: []
+# Extra values to be added to application.properties
+extraConfig: {}
+aggregator:
+  image: actian/aggregator-service:latest
+  # Aggregator Configuration List
+  config: []
+#  config:
+#    - name: Aggregator-Config-xml
+#      entity-id: 21
+#      entity-type: jobconfig
+#      account-id: 1
+#      active: true
+#      completion-size: 5
+#      completion-timeout: 5000
+#      data-type: xml
+#    - name: Aggregator-Config-json
+#      entity-id: 22
+#      entity-type: jobconfig
+#      account-id: 1
+#      active: true
+#      completion-size: 5
+#      completion-timeout: 5000
+#      data-type: json
+#    - name: Aggregator-Config-record
+#      entity-id: 11
+#      entity-type: jobconfig
+#      account-id: 1
+#      active: true
+#      completion-size: 5
+#      completion-timeout: 5000
+#      data-type: record
+  revisionHistoryLimit: 10
+  affinity: {}
+#   affinity:
+#     podAntiAffinity:
+#       preferredDuringSchedulingIgnoredDuringExecution:
+#       - weight: 1
+#         podAffinityTerm:
+#           labelSelector:
+#             matchLabels:
+#               app: integration-manager
+#               component: aggregator
+#           topologyKey: kubernetes.io/hostname
+  livenessProbe:
+    initialDelaySeconds: 120
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    httpGet:
+      scheme: HTTP
+      path: /health
+      port: 8080
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+    httpGet:
+      scheme: HTTP
+      path: /health
+      port: 8080
+  pullPolicy: IfNotPresent
+  extraInitContainers: []
+  extraConfig: {}
+  pdb: {}
+    #minAvailable: 1
+  replicaCount: 1
+  extraLabels: {}
+  podAnnotations: {}
+  resources: {}
+  # To set resources, replace resources: {} with:
+  #    resources:
+  #      requests:
+  #        memory: 500Mi
+  #        cpu: 500m
+  #      limits:
+  #        memory: 500Mi
+  #        cpu: 500m
+  nodeSelector: {}
+  service:
+    annotations: {}
+    type: ClusterIP
+aggregatorProcessor:
+  image: actian/aggregator-processor:latest
+  revisionHistoryLimit: 10
+  pdb: {}
+    #minAvailable: 1
+  affinity: {}
+  livenessProbe:
+    initialDelaySeconds: 120
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    httpGet:
+      scheme: HTTP
+      path: /health
+      port: 8080
+  pullPolicy: IfNotPresent
+  extraInitContainers: []
+  extraConfig: {}
+  replicaCount: 1
+  extraLabels: {}
+  podAnnotations: {}
+  resources: {}
+  nodeSelector: {}
+integrationManagerBase:
+  image: actian/integration-manager-base:latest
+  revisionHistoryLimit: 10
+  pdb: {}
+    #minAvailable: 1
+  affinity: {}
+  livenessProbe:
+    initialDelaySeconds: 120
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    httpGet:
+      scheme: HTTP
+      path: /health
+      port: 8080
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+    httpGet:
+      scheme: HTTP
+      path: /health
+      port: 8080
+  pullPolicy: IfNotPresent
+  extraInitContainers: []
+  extraConfig: {}
+  replicaCount: 1
+  extraLabels: {}
+  podAnnotations: {}
+  resources: {}
+  nodeSelector: {}
+  service:
+    annotations: {}
+    type: ClusterIP
+jobExecution:
+  image: actian/job-execution-service:latest
+  revisionHistoryLimit: 10
+  pdb: {}
+    #minAvailable: 1
+  affinity: {}
+  livenessProbe:
+    initialDelaySeconds: 120
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    httpGet:
+      scheme: HTTP
+      path: /health
+      port: 8080
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+    httpGet:
+      scheme: HTTP
+      path: /health
+      port: 8080
+  pullPolicy: IfNotPresent
+  extraInitContainers: []
+  extraConfig: {}
+  replicaCount: 1
+  extraLabels: {}
+  podAnnotations: {}
+  resources: {}
+  nodeSelector: {}
+  service:
+    annotations: {}
+    type: ClusterIP
+jobResultsProcessor:
+  image: actian/job-results-processor:latest
+  revisionHistoryLimit: 10
+  pdb: {}
+    #minAvailable: 1
+  affinity: {}
+  livenessProbe:
+    initialDelaySeconds: 120
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    httpGet:
+      scheme: HTTP
+      path: /health
+      port: 8080
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+    httpGet:
+      scheme: HTTP
+      path: /health
+      port: 8080
+  pullPolicy: IfNotPresent
+  extraInitContainers: []
+  extraConfig: {}
+  replicaCount: 1
+  extraLabels: {}
+  podAnnotations: {}
+  resources: {}
+  nodeSelector: {}
+  service:
+    annotations: {}
+    type: ClusterIP
+jobScheduler:
+  image: actian/job-scheduler-service:latest
+  revisionHistoryLimit: 10
+  pdb: {}
+    #minAvailable: 1
+  affinity: {}
+  livenessProbe:
+    initialDelaySeconds: 120
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    httpGet:
+      scheme: HTTP
+      path: /health
+      port: 8080
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+    httpGet:
+      scheme: HTTP
+      path: /health
+      port: 8080
+  pullPolicy: IfNotPresent
+  extraInitContainers: []
+  extraConfig: {}
+  replicaCount: 1
+  extraLabels: {}
+  podAnnotations: {}
+  resources: {}
+  nodeSelector: {}
+  service:
+    annotations: {}
+    type: ClusterIP
+
+#Prometheus
+prometheus:
+  operator:
+    ## Are you using Prometheus Operator? [Blog Post](https://coreos.com/blog/the-prometheus-operator.html)
+    enabled: false
+
+    serviceMonitor:
+      ## Interval at which Prometheus scrapes RabbitMQ Exporter
+      interval: 10s
+
+
+# Ingress type must support regex
+ingress:
+  enabled: true
+  tls: false
+  tlsSecret:
+  annotations: {}
+  hostName:
+  pathVersionPrefix:
+
+# Base API Endpoint
+imBaseUrl:
+
+# Default Destination ID (Worker Pool)
+destinationId: 1
+jobTimeOut: 30
+resultsQueue: JOB_RESULTS
+
+# Datasource Configuration
+datasource:
+  url:
+  username:
+  password:
+  maximumPoolSize: 10
+  minimumIdle: 2
+
+# AMQP Configuration - Must use AMQP version 0-9-1
+existingRabbitSecret: ""
+# Refer to secrets.yaml to see available properties.
+# Minimum required properties:
+#     spring.datasource.username
+#     spring.datasource.password
+# If existingRabbitSecret is not specified. These properties must be included as well:
+#     rabbitmq-username
+#     rabbitmq-password
+existingSecret: ""
+amqp:
+  # Set host to rabbitmq-rabbitmq-ha.default.svc.cluster.local if using helm rabbitmq-ha
+  host:
+  port: 5672
+  # Only set username & password if not using existingRabbitSecret
+  username:
+  password:
+  sslEnabled: false
+  sslProtocol: TLSv1.2
+  sslKeyStore:
+  sslKeyStoreType: PKCS12
+  sslKeyStorePassword:
+  managementUrl:
+  externalHost:
+  externalPort: 5672
+  externalSslEnabled: false
+
+# Coordinated Caching Configuration
+cache:
+  enable: false
+# To enable coordinated caching set ActiveMQ Broker properties
+jms:
+  # Set host to ActiveMQ broker host
+  host:
+  # Set port to ActiveMQ broker port
+  port:
+  # Set username to  ActiveMQ broker username
+  username:
+  # Set password to to  ActiveMQ broker username
+  password:
+
+# File Storage
+repository:
+  # aws,local,azure
+  storageType: aws
+  sourceBucket:
+  sourcePrefix: repository
+  targetBucket:
+  targetPrefix: history/job
+  accountDir: account
+  localTempDir: tmp
+  userDir: user
+  jobTemplateDir: template
+  jobConfigDir: configuration
+  awsServiceEndpoint: s3.us-east-1.amazonaws.com
+  awsSigningRegion: us-east-1
+  azureConnectString:
+  nestedJobStorage: false
+  awsCreateEnvVar: false
+  awsAccessKeyId:
+  awsSecretAccessKey:
+
+  # Agent File Storage
+agent:
+  # Base url location for agent artifacts
+  baseUrl:
+  # Windows engine name found in agent.baseUrl location
+  windowsEngine:
+  # Linux engine name found in agent.baseUrl location
+  linuxEngine:
+
+# Job Notification Configuration
+notification:
+  enabled: false
+  springMailHost: smtp.gmail.com
+  springMailPort: 587
+  springMailProtocol: smtp
+  springMailUsername:
+  springMailPassword:
+  springMailAuth: true
+  springMailTLSEnable: true
+  springMailTLSRequired: true
+  mailFrom:
+  mailTo:
+
+# Encryption Configuration
+encryption:
+  enabled: false
+  passwordEncoderType: bcrypt
+  # Required when using passwordEncoderType=datacloud
+  keyStorePassword:
+  # Required when using passwordEncoderType=datacloud
+  # Base64 encoded keystore file contents
+  keyStore:
+  # Name of key in keystore
+  certificateName:

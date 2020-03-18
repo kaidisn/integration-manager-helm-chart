@@ -1,0 +1,218 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "integration-manager.fullname" . }}
+  {{- if .Values.ingress.annotations }}
+  annotations:
+    {{ .Values.ingress.annotations  | toYaml | indent 4 | trim }}
+  {{- end }}
+  labels:
+    app: integration-manager
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+spec:
+  {{- if .Values.ingress.tls }}
+  tls:
+    - secretName: {{ .Values.ingress.tlsSecret }}
+      {{- if .Values.ingress.hostName }}
+      hosts:
+        - {{ .Values.ingress.hostName }}
+      {{- end }}
+  {{- end }}
+  rules:
+    {{- if .Values.ingress.hostName }}
+    - host: {{ .Values.ingress.hostName }}
+      http:
+    {{- else }}
+    - http:
+    {{- end }}
+        paths:
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/login.*)
+          {{- else }}
+          path: /api/login
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/token-exchange.*)
+          {{- else }}
+          path: /api/token-exchange
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/account.*)
+          {{- else }}
+          path: /api/account
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/license.*)
+          {{- else }}
+          path: /api/license
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/destinations.*)
+          {{- else }}
+          path: /api/destinations
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/users.*)
+          {{- else }}
+          path: /api/users
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/groups.*)
+          {{- else }}
+          path: /api/groups
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/jobtemplates.*)
+          {{- else }}
+          path: /api/jobtemplates
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/jobconfigs.*)
+          {{- else }}
+          path: /api/jobconfigs
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(oauth.*)
+          {{- else }}
+          path: /oauth
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/jobconfig-aliases.*)
+          {{- else }}
+          path: /api/jobconfig-aliases
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.aggregator.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/aggregators.*)
+          {{- else }}
+          path: /api/aggregators
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.job-execution.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/listener.*)
+          {{- else }}
+          path: /api/listener
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.job-execution.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/jobconfigs\/.*\/jobs.*)
+          {{- else }}
+          path: /api/jobconfigs/.*/jobs
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.job-execution.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/jobconfigs\/.*\/listener.*)
+          {{- else }}
+          path: /api/jobconfigs/.*/listener
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.job-execution.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/jobs.*)
+          {{- else }}
+          path: /api/jobs
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/subscriptions.*)
+          {{- else }}
+          path: /api/subscriptions
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/agents.*)
+          {{- else }}
+          path: /api/agents
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.job-results-processor.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/jobs\/events.*)
+          {{- else }}
+          path: /api/jobs/events
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(\.well-known\/openid-configuration.*)
+          {{- else }}
+          path: /.well-known/openid-configuration
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(apidocs.*)
+          {{- else }}
+          path: /apidocs
+          {{- end }}
+        {{- if .Values.ingress.pathVersionPrefix }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          path: /(apidocs.*)
+        {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.job-scheduler.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/jobconfigs\/.*\/schedule.*)
+          {{- else }}
+          path: /api/jobconfigs/.*/schedule
+          {{- end }}
+        # Expose this when ready
+#        - backend:
+#            serviceName: {{ template "integration-manager.base.fullname" . }}
+#            servicePort: 8080
+#          path: /api/clientdetails
+    {{- end }}

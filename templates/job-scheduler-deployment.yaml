@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "integration-manager.job-scheduler.fullname" . }}
+  labels:
+    app: integration-manager
+    component: job-scheduler
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.jobScheduler.replicaCount }}
+  revisionHistoryLimit: {{ .Values.jobScheduler.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: integration-manager
+      component: job-scheduler
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/sharedconfig: {{ include (print $.Template.BasePath "/shared-configmap.yaml") . | sha256sum }}
+        checksum/jobschedulerconfig: {{ include (print $.Template.BasePath "/job-scheduler-configmap.yaml") . | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        {{- if .Values.jobScheduler.podAnnotations }}
+        {{ .Values.jobScheduler.podAnnotations | toYaml | indent 8 | trim }}
+        {{- end }}
+      labels:
+        app: integration-manager
+        component: job-scheduler
+        chart: {{ template "integration-manager.chart" . }}
+        release: {{ .Release.Name }}
+        {{- if .Values.jobScheduler.extraLabels }}
+        {{ .Values.jobScheduler.extraLabels | toYaml | indent 8 | trim }}
+        {{- end }}
+    spec:
+      {{- if .Values.jobScheduler.affinity }}
+      affinity:
+        {{ .Values.jobScheduler.affinity | toYaml | indent 8 | trim }}
+      {{- end }}
+      serviceAccountName: {{ template "integration-manager.fullname" . }}
+      {{- if .Values.jobScheduler.nodeSelector }}
+      nodeSelector:
+        {{ .Values.jobScheduler.nodeSelector | toYaml | indent 8 | trim  }}
+      {{- end }}
+      {{- if .Values.jobScheduler.extraInitContainers }}
+      initContainers:
+        {{ tpl .Values.jobScheduler.extraInitContainers . | indent 6 | trim }}
+      {{- end }}
+      containers:
+      - name: job-scheduler
+        image: {{ .Values.jobScheduler.image }}
+        imagePullPolicy: {{ .Values.jobScheduler.pullPolicy }}
+        env:
+        - name: IM_SHARED_CONFIGMAP_NAME
+          value: {{ printf "%s-shared" (include "integration-manager.fullname" .) }}
+        - name: JOB_SCHEDULER_CONFIGMAP_NAME
+          value: {{ template "integration-manager.job-scheduler.fullname" . }}
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: secret-volume
+          readOnly: true
+          mountPath: /etc/secrets
+        {{- if .Values.existingRabbitSecret }}
+        - name: amqp-secret-volume
+          readOnly: true
+          mountPath: /etc/secrets/amqp
+        {{- end }}
+        readinessProbe:
+          {{ .Values.jobScheduler.readinessProbe | toYaml | indent 10 | trim }}
+        livenessProbe:
+          {{ .Values.jobScheduler.livenessProbe | toYaml | indent 10 | trim }}
+        {{- if .Values.jobScheduler.resources }}
+        resources:
+          {{ .Values.jobScheduler.resources | toYaml | indent 10 | trim }}
+        {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- range .Values.imagePullSecrets }}
+      - name: {{ . }}
+      {{- end }}
+      {{- end }}
+      volumes:
+      - name: secret-volume
+        secret:
+        {{- if .Values.existingSecret }}
+          secretName: {{ .Values.existingSecret }}
+        {{- else }}
+          secretName: {{ template "integration-manager.fullname" . }}
+        {{- end }}
+      {{- if .Values.existingRabbitSecret }}
+      - name: amqp-secret-volume
+        secret:
+          secretName: {{ .Values.existingRabbitSecret }}
+          items:
+          - key: rabbitmq-username
+            path: rabbitmq-username
+          - key: rabbitmq-password
+            path: rabbitmq-password
+      {{- end }}

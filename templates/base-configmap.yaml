@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "integration-manager.base.fullname" . }}
+  labels:
+    app: integration-manager
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+data:
+  application.properties: |
+    #integration-manager-base specific properties
+    {{- if .Values.agent.baseUrl }}
+    agent.base-url={{ .Values.agent.baseUrl }}
+    {{- end }}
+    {{- if .Values.agent.windowsEngine }}
+    agent.windows-engine={{ .Values.agent.windowsEngine }}
+    {{- end }}
+    {{- if .Values.agent.linuxEngine }}
+    agent.linux-engine={{ .Values.agent.linuxEngine }}
+    {{- end }}
+    {{- if .Values.integrationManagerBase.extraConfig }}
+    {{ .Values.integrationManagerBase.extraConfig | indent 4 | trim }}
+    {{- end }}

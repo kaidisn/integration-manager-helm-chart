@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "integration-manager.job-results-processor.fullname" . }}
+  {{- if .Values.jobResultsProcessor.service.annotations }}
+  annotations:
+    {{ .Values.jobResultsProcessor.service.annotations | toYaml | indent 4 | trim }}
+  {{- end }}
+  labels:
+    app: integration-manager
+    component: job-results-processor
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+spec:
+  ports:
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: integration-manager
+    component: job-results-processor
+    release: {{ .Release.Name }}
+  type: "{{ .Values.jobResultsProcessor.service.type }}"

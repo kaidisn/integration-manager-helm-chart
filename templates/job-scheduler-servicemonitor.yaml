@@ -1,0 +1,21 @@
+{{- if .Values.prometheus.operator.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ template "integration-manager.job-scheduler.fullname" . }}
+  labels:
+    app: integration-manager
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: integration-manager
+      component: job-scheduler
+      release: {{ .Release.Name }}
+  endpoints:
+    - port: https
+      path: '/prometheus'
+      interval: {{ .Values.prometheus.operator.serviceMonitor.interval }}
+      honorLabels: true
+{{- end }}

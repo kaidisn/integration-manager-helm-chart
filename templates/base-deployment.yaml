@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "integration-manager.base.fullname" . }}
+  labels:
+    app: integration-manager
+    component: base
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.integrationManagerBase.replicaCount }}
+  revisionHistoryLimit: {{ .Values.integrationManagerBase.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: integration-manager
+      component: base
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/sharedconfig: {{ include (print $.Template.BasePath "/shared-configmap.yaml") . | sha256sum }}
+        checksum/baseconfig: {{ include (print $.Template.BasePath "/base-configmap.yaml") . | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        {{- if .Values.integrationManagerBase.podAnnotations }}
+        {{ .Values.integrationManagerBase.podAnnotations | toYaml | indent 8 | trim }}
+        {{- end }}
+      labels:
+        app: integration-manager
+        component: base
+        chart: {{ template "integration-manager.chart" . }}
+        release: {{ .Release.Name }}
+        {{- if .Values.integrationManagerBase.extraLabels }}
+        {{ .Values.integrationManagerBase.extraLabels | toYaml | indent 8 | trim }}
+        {{- end }}
+    spec:
+      {{- if .Values.integrationManagerBase.affinity }}
+      affinity:
+        {{ .Values.integrationManagerBase.affinity | toYaml | indent 8 | trim }}
+      {{- end }}
+      serviceAccountName: {{ template "integration-manager.fullname" . }}
+      {{- if .Values.integrationManagerBase.nodeSelector }}
+      nodeSelector:
+        {{ .Values.integrationManagerBase.nodeSelector | toYaml | indent 8 | trim }}
+      {{- end }}
+      {{- if .Values.integrationManagerBase.extraInitContainers }}
+      initContainers:
+        {{ tpl .Values.integrationManagerBase.extraInitContainers . | indent 6 | trim }}
+      {{- end }}
+      containers:
+      - name: integration-manager-base
+        image: {{ .Values.integrationManagerBase.image }}
+        imagePullPolicy: {{ .Values.integrationManagerBase.pullPolicy }}
+        env:
+        - name: IM_SHARED_CONFIGMAP_NAME
+          value: {{ printf "%s-shared" (include "integration-manager.fullname" .) }}
+        - name: IM_BASE_CONFIGMAP_NAME
+          value: {{ template "integration-manager.base.fullname" . }}
+        {{- if .Values.repository.awsCreateEnvVar }}
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              key: aws-access-key
+              {{- if .Values.existingSecret }}
+              name: {{ .Values.existingSecret }}
+              {{- else }}
+              name: {{ template "integration-manager.fullname" . }}
+              {{- end }}
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key: aws-secret-key
+              {{- if .Values.existingSecret }}
+              name: {{ .Values.existingSecret }}
+              {{- else }}
+              name: {{ template "integration-manager.fullname" . }}
+              {{- end }}
+        {{- end }}
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: secret-volume
+          readOnly: true
+          mountPath: /etc/secrets
+        {{- if .Values.existingRabbitSecret }}
+        - name: amqp-secret-volume
+          readOnly: true
+          mountPath: /etc/secrets/amqp
+        {{- end }}
+        readinessProbe:
+          {{ .Values.integrationManagerBase.readinessProbe | toYaml | indent 10 | trim }}
+        livenessProbe:
+          {{ .Values.integrationManagerBase.livenessProbe | toYaml | indent 10 | trim }}
+        {{- if .Values.integrationManagerBase.resources }}
+        resources:
+          {{ .Values.integrationManagerBase.resources | toYaml | indent 10 | trim }}
+        {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
+      {{- end }}
+      {{- end }}
+      volumes:
+      - name: secret-volume
+        secret:
+          {{- if .Values.existingSecret }}
+          secretName: {{ .Values.existingSecret }}
+          {{- else }}
+          secretName: {{ template "integration-manager.fullname" . }}
+          {{- end }}
+      {{- if .Values.existingRabbitSecret }}
+      - name: amqp-secret-volume
+        secret:
+          secretName: {{ .Values.existingRabbitSecret }}
+          items:
+          - key: rabbitmq-username
+            path: rabbitmq-username
+          - key: rabbitmq-password
+            path: rabbitmq-password
+      {{- end }}

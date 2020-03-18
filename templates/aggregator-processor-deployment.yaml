@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "integration-manager.aggregator-processor.fullname" . }}
+  labels:
+    app: integration-manager
+    component: aggregator-processor
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.aggregatorProcessor.replicaCount }}
+  revisionHistoryLimit: {{ .Values.aggregatorProcessor.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: integration-manager
+      component: aggregator-processor
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/sharedconfig: {{ include (print $.Template.BasePath "/shared-configmap.yaml") . | sha256sum }}
+        checksum/aggprossconfig: {{ include (print $.Template.BasePath "/aggregator-processor-configmap.yaml") . | sha256sum }}
+        checksum/aggsharedconfig: {{ include (print $.Template.BasePath "/aggregator-shared-configmap.yaml") . | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        {{- if .Values.aggregatorProcessor.podAnnotations }}
+        {{ .Values.aggregatorProcessor.podAnnotations | toYaml | indent 8 | trim }}
+        {{- end }}
+      labels:
+        app: integration-manager
+        component: aggregator-processor
+        chart: {{ template "integration-manager.chart" . }}
+        release: {{ .Release.Name }}
+        {{- if .Values.aggregatorProcessor.extraLabels }}
+        {{ .Values.aggregatorProcessor.extraLabels | toYaml | indent 8 | trim }}
+        {{- end }}
+    spec:
+      {{- if .Values.aggregatorProcessor.affinity }}
+      affinity:
+        {{ .Values.aggregatorProcessor.affinity | toYaml | indent 8 | trim }}
+      {{- end }}
+      serviceAccountName: {{ template "integration-manager.fullname" . }}
+      {{- if .Values.aggregatorProcessor.nodeSelector }}
+      nodeSelector:
+        {{ .Values.aggregatorProcessor.nodeSelector | toYaml | indent 8 | trim }}
+      {{- end }}
+      {{- if .Values.aggregatorProcessor.extraInitContainers }}
+      initContainers:
+        {{ tpl .Values.aggregatorProcessor.extraInitContainers . | indent 8 | trim}}
+      {{- end }}
+      containers:
+      - name: aggregator-processor
+        image: {{ .Values.aggregatorProcessor.image }}
+        imagePullPolicy: {{ .Values.aggregatorProcessor.pullPolicy }}
+        env:
+        - name: IM_SHARED_CONFIGMAP_NAME
+          value: {{ printf "%s-shared" (include "integration-manager.fullname" .) }}
+        - name: AGGREGATOR_SHARED_CONFIGMAP_NAME
+          value: {{ printf "%s-shared" (include "integration-manager.aggregator.fullname" .) }}
+        - name: AGGREGATOR_PROCESSOR_CONFIGMAP_NAME
+          value: {{ template "integration-manager.aggregator-processor.fullname" . }}
+        {{- if .Values.repository.awsCreateEnvVar }}
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              key: aws-access-key
+              {{- if .Values.existingSecret }}
+              name: {{ .Values.existingSecret }}
+              {{- else }}
+              name: {{ template "integration-manager.fullname" . }}
+              {{- end }}
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key: aws-secret-key
+              {{- if .Values.existingSecret }}
+              name: {{ .Values.existingSecret }}
+              {{- else }}
+              name: {{ template "integration-manager.fullname" . }}
+              {{- end }}
+        {{- end }}
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: secret-volume
+          readOnly: true
+          mountPath: /etc/secrets
+        {{- if .Values.existingRabbitSecret }}
+        - name: amqp-secret-volume
+          readOnly: true
+          mountPath: /etc/secrets/amqp
+        {{- end }}
+        livenessProbe:
+          {{ .Values.aggregatorProcessor.livenessProbe | toYaml | indent 10 | trim }}
+        {{- if .Values.aggregatorProcessor.resources }}
+        resources:
+          {{ .Values.aggregatorProcessor.resources | toYaml | indent 10 | trim }}
+        {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
+      {{- end }}
+      {{- end }}
+      volumes:
+      - name: secret-volume
+        secret:
+          {{- if .Values.existingSecret }}
+          secretName: {{ .Values.existingSecret }}
+          {{- else }}
+          secretName: {{ template "integration-manager.fullname" . }}
+          {{- end }}
+      {{- if .Values.existingRabbitSecret }}
+      - name: amqp-secret-volume
+        secret:
+          secretName: {{ .Values.existingRabbitSecret }}
+          items:
+          - key: rabbitmq-username
+            path: rabbitmq-username
+          - key: rabbitmq-password
+            path: rabbitmq-password
+      {{- end }}

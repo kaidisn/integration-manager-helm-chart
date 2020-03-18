@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "integration-manager.job-results-processor.fullname" . }}
+  labels:
+    app: integration-manager
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+data:
+  application.properties: |
+    #job-results-processor specific properties
+    {{- if .Values.jobResultsProcessor.extraConfig }}
+    {{ .Values.jobResultsProcessor.extraConfig | indent 4 | trim }}
+    {{- end }}

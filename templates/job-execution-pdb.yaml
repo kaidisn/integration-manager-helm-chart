@@ -1,0 +1,18 @@
+{{- if .Values.jobExecution.pdb }}
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "integration-manager.job-execution.fullname" . }}
+  labels:
+    app: integration-manager
+    component: job-execution
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: integration-manager
+      component: job-execution
+      release: {{ .Release.Name }}
+  {{ toYaml .Values.jobExecution.pdb | indent 2 | trim }}
+{{- end }}
