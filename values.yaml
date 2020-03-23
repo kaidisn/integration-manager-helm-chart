@@ -8,7 +8,7 @@ imagePullSecrets: []
 # Extra values to be added to application.properties
 extraConfig: {}
 aggregator:
-  image: actian/aggregator-service:latest
+  image: actian/aggregator-service:2.0.5.270
   # Aggregator Configuration List
   config: []
 #  config:
@@ -89,7 +89,7 @@ aggregator:
     annotations: {}
     type: ClusterIP
 aggregatorProcessor:
-  image: actian/aggregator-processor:latest
+  image: actian/aggregator-processor:2.0.5.270
   revisionHistoryLimit: 10
   pdb: {}
     #minAvailable: 1
@@ -112,7 +112,7 @@ aggregatorProcessor:
   resources: {}
   nodeSelector: {}
 integrationManagerBase:
-  image: actian/integration-manager-base:latest
+  image: actian/integration-manager-base:2.0.5.270
   revisionHistoryLimit: 10
   pdb: {}
     #minAvailable: 1
@@ -148,7 +148,7 @@ integrationManagerBase:
     annotations: {}
     type: ClusterIP
 jobExecution:
-  image: actian/job-execution-service:latest
+  image: actian/job-execution-service:2.0.5.270
   revisionHistoryLimit: 10
   pdb: {}
     #minAvailable: 1
@@ -184,7 +184,7 @@ jobExecution:
     annotations: {}
     type: ClusterIP
 jobResultsProcessor:
-  image: actian/job-results-processor:latest
+  image: actian/job-results-processor:2.0.5.270
   revisionHistoryLimit: 10
   pdb: {}
     #minAvailable: 1
@@ -220,7 +220,7 @@ jobResultsProcessor:
     annotations: {}
     type: ClusterIP
 jobScheduler:
-  image: actian/job-scheduler-service:latest
+  image: actian/job-scheduler-service:2.0.5.270
   revisionHistoryLimit: 10
   pdb: {}
     #minAvailable: 1
