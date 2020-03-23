@@ -24,7 +24,7 @@ The following table lists the configurable parameters of the integration-manager
 | -----  | ----- | ------|
 | `imagePullSecrets` | name of Secret resource containing private registry credentials | [] |
 | `extraConfig` | additional properties to include in the config map | {} |
-| `aggregator.image` | image to pull for the aggregator service | actian/aggregator-service:latest |
+| `aggregator.image` | image to pull for the aggregator service | actian/aggregator-service:2.0.5.270 |
 | `aggregator.config` | configuration enabling aggregation for specific job configurations | [] |
 | `aggregator.revisionHistoryLimit` | the number of old history to retain to allow rollback | 10 |
 | `aggregator.affinity` | node/pod affinities | {} |
@@ -41,7 +41,7 @@ The following table lists the configurable parameters of the integration-manager
 | `aggregator.nodeSelector` | set nodeSelector | {} |
 | `aggregator.service.annotations` | service annotations | {} |
 | `aggregator.service.type` | service type | ClusterIP |
-| `aggregatorProcessor.image` | image to pull for the aggregator processor | actian/aggregator-processor:latest |
+| `aggregatorProcessor.image` | image to pull for the aggregator processor | actian/aggregator-processor:2.0.5.270 |
 | `aggregatorProcessor.revisionHistoryLimit` | the number of old history to retain to allow rollback | 10 |
 | `aggregatorProcessor.affinity` | node/pod affinities | {} |
 | `aggregatorProcessor.livenessProbe` | pod liveness probe | { "initialDelaySeconds": 120, "periodSeconds": 10, "timeoutSeconds": 5, "successThreshhold": 1, "failureThreshhold": 3, "httpGet": { "scheme": "HTTP", "path": "/health", "port": 8080 }} |
@@ -54,7 +54,7 @@ The following table lists the configurable parameters of the integration-manager
 | `aggregatorProcessor.podAnnotations` | pod annotations | {} |
 | `aggregatorProcessor.resources` | set resource limits | {} |
 | `aggregatorProcessor.nodeSelector` | set nodeSelector | {} |
-| `integrationManagerBase.image` | image to pull for the integration manager base service | actian/integration-manager-base:latest |
+| `integrationManagerBase.image` | image to pull for the integration manager base service | actian/integration-manager-base:2.0.5.270 |
 | `integrationManagerBase.revisionHistoryLimit` | the number of old history to retain to allow rollback | 10 |
 | `integrationManagerBase.affinity` | node/pod affinities | {} |
 | `integrationManagerBase.livenessProbe` | pod liveness probe | { "initialDelaySeconds": 120, "periodSeconds": 10, "timeoutSeconds": 5, "successThreshhold": 1, "failureThreshhold": 3, "httpGet": { "scheme": "HTTP", "path": "/health", "port": 8080 }} |
@@ -70,7 +70,7 @@ The following table lists the configurable parameters of the integration-manager
 | `integrationManagerBase.nodeSelector` | set nodeSelector | {} |
 | `integrationManagerBase.service.annotations` | service annotations | {} |
 | `integrationManagerBase.service.type` | service type | ClusterIP |
-| `jobExecution.image` | image to pull for the job execution service | actian/job-execution-service:latest |
+| `jobExecution.image` | image to pull for the job execution service | actian/job-execution-service:2.0.5.270 |
 | `jobExecution.revisionHistoryLimit` | the number of old history to retain to allow rollback | 10 |
 | `jobExecution.affinity` | node/pod affinities | {} |
 | `jobExecution.livenessProbe` | pod liveness probe | { "initialDelaySeconds": 120, "periodSeconds": 10, "timeoutSeconds": 5, "successThreshhold": 1, "failureThreshhold": 3, "httpGet": { "scheme": "HTTP", "path": "/health", "port": 8080 }} |
@@ -86,7 +86,7 @@ The following table lists the configurable parameters of the integration-manager
 | `jobExecution.nodeSelector` | set nodeSelector | {} |
 | `jobExecution.service.annotations` | service annotations | {} |
 | `jobExecution.service.type` | service type | ClusterIP |
-| `jobResultsProcessor.image` | image to pull for the job results processor service | actian/job-results-processor:latest |
+| `jobResultsProcessor.image` | image to pull for the job results processor service | actian/job-results-processor:2.0.5.270 |
 | `jobResultsProcessor.revisionHistoryLimit` | the number of old history to retain to allow rollback | 10 |
 | `jobResultsProcessor.affinity` | node/pod affinities | {} |
 | `jobResultsProcessor.livenessProbe` | pod liveness probe | { "initialDelaySeconds": 120, "periodSeconds": 10, "timeoutSeconds": 5, "successThreshhold": 1, "failureThreshhold": 3, "httpGet": { "scheme": "HTTP", "path": "/health", "port": 8080 }} |
@@ -102,7 +102,7 @@ The following table lists the configurable parameters of the integration-manager
 | `jobResultsProcessor.nodeSelector` | set nodeSelector | {} |
 | `jobResultsProcessor.service.annotations` | service annotations | {} |
 | `jobResultsProcessor.service.type` | service type | ClusterIP |
-| `jobScheduler.image` | image to pull for the job scheduler service | actian/job-scheduler-service:latest |
+| `jobScheduler.image` | image to pull for the job scheduler service | actian/job-scheduler-service:2.0.5.270 |
 | `jobScheduler.revisionHistoryLimit` | the number of old history to retain to allow rollback | 10 |
 | `jobScheduler.affinity` | node/pod affinities | {} |
 | `jobScheduler.livenessProbe` | pod liveness probe | { "initialDelaySeconds": 120, "periodSeconds": 10, "timeoutSeconds": 5, "successThreshhold": 1, "failureThreshhold": 3, "httpGet": { "scheme": "HTTP", "path": "/health", "port": 8080 }} |
