@@ -20,7 +20,7 @@ To install the chart, first configure a override-values.yaml file specific for y
 
 The following table lists the configurable parameters of the integration-manager chart and their default values.
   
-| Paramter | Description | Default|
+| Parameter | Description | Default|
 | -----  | ----- | ------|
 | `imagePullSecrets` | name of Secret resource containing private registry credentials | [] |
 | `extraConfig` | additional properties to include in the config map | {} |
