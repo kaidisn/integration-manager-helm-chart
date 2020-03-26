@@ -189,8 +189,8 @@ spec:
           path: /.well-known/openid-configuration
           {{- end }}
         - backend:
-            serviceName: {{ template "integration-manager.base.fullname" . }}
-            servicePort: 8080
+            serviceName: {{ template "integration-manager.static-content.fullname" . }}
+            servicePort: 80
           {{- if .Values.ingress.pathVersionPrefix }}
           path: /{{ .Values.ingress.pathVersionPrefix }}/(apidocs.*)
           {{- else }}
@@ -198,9 +198,23 @@ spec:
           {{- end }}
         {{- if .Values.ingress.pathVersionPrefix }}
         - backend:
-            serviceName: {{ template "integration-manager.base.fullname" . }}
-            servicePort: 8080
+            serviceName: {{ template "integration-manager.static-content.fullname" . }}
+            servicePort: 80
           path: /(apidocs.*)
+        {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.static-content.fullname" . }}
+            servicePort: 80
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(ui.*)
+          {{- else }}
+          path: /ui
+          {{- end }}
+        {{- if .Values.ingress.pathVersionPrefix }}
+        - backend:
+            serviceName: {{ template "integration-manager.static-content.fullname" . }}
+            servicePort: 80
+          path: /(ui.*)
         {{- end }}
         - backend:
             serviceName: {{ template "integration-manager.job-scheduler.fullname" . }}

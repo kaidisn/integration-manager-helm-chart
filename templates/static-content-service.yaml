@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "integration-manager.static-content.fullname" . }}
+  {{- if .Values.staticContent.service.annotations }}
+  annotations:
+    {{ .Values.staticContent.service.annotations  | toYaml | indent 4 | trim }}
+  {{- end }}
+  labels:
+    app: integration-manager
+    component: static-content
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: integration-manager
+    component: static-content
+    release: {{ .Release.Name }}
+  type: "{{ .Values.staticContent.service.type }}"

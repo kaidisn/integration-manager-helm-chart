@@ -55,3 +55,8 @@ so truncation should be 63-22=41.
 {{- define "integration-manager.job-scheduler.fullname" -}}
 {{- printf "%s-job-scheduler" (include "integration-manager.fullname" .) -}}
 {{- end }}
+
+{{/* Fullname suffixed with static-content */}}
+{{- define "integration-manager.static-content.fullname" -}}
+{{- printf "%s-static-content" (include "integration-manager.fullname" .) -}}
+{{- end }}

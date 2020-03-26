@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "integration-manager.static-content.fullname" . }}
+  labels:
+    app: integration-manager
+    component: static-content
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.staticContent.replicaCount }}
+  revisionHistoryLimit: {{ .Values.staticContent.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: integration-manager
+      component: static-content
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/staticcontentconfig: {{ include (print $.Template.BasePath "/static-content-configmap.yaml") . | sha256sum }}
+        {{- if .Values.staticContent.podAnnotations }}
+        {{ .Values.staticContent.podAnnotations | toYaml | indent 8 | trim }}
+        {{- end }}
+      labels:
+        app: integration-manager
+        component: static-content
+        chart: {{ template "integration-manager.chart" . }}
+        release: {{ .Release.Name }}
+        {{- if .Values.staticContent.extraLabels }}
+        {{ .Values.staticContent.extraLabels | toYaml | indent 8 | trim }}
+        {{- end }}
+    spec:
+      {{- if .Values.staticContent.affinity }}
+      affinity:
+        {{ .Values.staticContent.affinity | toYaml | indent 8 | trim }}
+      {{- end }}
+      serviceAccountName: {{ template "integration-manager.fullname" . }}
+      {{- if .Values.staticContent.nodeSelector }}
+      nodeSelector:
+        {{ .Values.staticContent.nodeSelector | toYaml | indent 8 | trim }}
+      {{- end }}
+      {{- if .Values.staticContent.extraInitContainers }}
+      initContainers:
+        {{ tpl .Values.staticContent.extraInitContainers . | indent 6 | trim }}
+      {{- end }}
+      containers:
+      - name: static-content
+        image: {{ .Values.staticContent.image }}
+        imagePullPolicy: {{ .Values.staticContent.pullPolicy }}
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: app-config
+          readOnly: true
+          mountPath: /opt/Actian/volume
+        readinessProbe:
+          {{ .Values.staticContent.readinessProbe | toYaml | indent 10 | trim }}
+        livenessProbe:
+          {{ .Values.staticContent.livenessProbe | toYaml | indent 10 | trim }}
+        {{- if .Values.staticContent.resources }}
+        resources:
+          {{ .Values.staticContent.resources | toYaml | indent 10 | trim }}
+        {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
+      {{- end }}
+      {{- end }}
+      volumes:
+      - name: app-config
+        configMap:
+          name: {{ template "integration-manager.static-content.fullname" . }}
