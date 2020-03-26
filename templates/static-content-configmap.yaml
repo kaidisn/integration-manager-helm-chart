@@ -31,6 +31,6 @@ data:
       "BASE_URL_LICENSE": "{{ .Values.staticContent.baseEndpoint }}/api",
       "BASE_URL_SUBSCRIPTION": "{{ .Values.staticContent.baseEndpoint }}/api",
       "BASE_URL_MACRO": "{{ .Values.staticContent.baseEndpoint }}/api",
-      "BASE_URL_DESTINATION": "{{ .Values.staticContent.baseEndpoint }}/
+      "BASE_URL_DESTINATION": "{{ .Values.staticContent.baseEndpoint }}/api"
     }
 
