@@ -118,6 +118,25 @@ The following table lists the configurable parameters of the integration-manager
 | `jobScheduler.nodeSelector` | set nodeSelector | {} |
 | `jobScheduler.service.annotations` | service annotations | {} |
 | `jobScheduler.service.type` | service type | ClusterIP |
+| `staticContent.image` | image to pull for integration manager's static content (apidocs, console) | actian/integration-manager-static-content:2.0.5.270 |
+| `staticContent.revisionHistoryLimit` | the number of old history to retain to allow rollback | 10 |
+| `staticContent.affinity` | node/pod affinities | {} |
+| `staticContent.livenessProbe` | pod liveness probe | { "initialDelaySeconds": 10, "periodSeconds": 10, "timeoutSeconds": 5, "successThreshhold": 1, "failureThreshhold": 3, "httpGet": { "scheme": "HTTP", "path": "/", "port": 80 }} |
+| `staticContent.readinessProbe` | pod readiness probe | { "initialDelaySeconds": 5, "periodSeconds": 10, "timeoutSeconds": 5, "successThreshhold": 1, "failureThreshhold": 3, "httpGet": { "scheme": "HTTP", "path": "/", "port": 80 }} |
+| `staticContent.pullPolicy` | when to pull image | IfNotPresent
+| `staticContent.extraInitContainers` | init containers for pod | [] |
+| `staticContent.pdb` | pod disruption budget | {} |
+| `staticContent.replicaCount` | number of pods to run | 1 |
+| `staticContent.extraLabels` | additional labels to add | {} |
+| `staticContent.podAnnotations` | pod annotations | {} |
+| `staticContent.resources` | set resource limits | {} |
+| `staticContent.nodeSelector` | set nodeSelector | {} |
+| `staticContent.service.annotations` | service annotations | {} |
+| `staticContent.baseEndpoint` | integration manager base endpoint for the browser to send requests to | nil |
+| `staticContent.jobsEndpoint` | job execution endpoint for the browser to send requests to | nil |
+| `staticContent.salesForceLoginUrl` | salesforce url for login redirect | nil |
+| `staticContent.agentInstallerUrlWindows` | location for the windows agent installer | nil |
+| `staticContent.agentInstallerUrlLinux` | location for the linux agent installer | nil |
 | `prometheus.operator.enabled` | creates service monitors when true | false |
 | `prometheus.operator.serviceMonitor.interval` | interval for prometheus scraping | 10s |
 | `ingress.enabled` | create ingress resource | true |

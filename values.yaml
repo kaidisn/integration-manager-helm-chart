@@ -255,7 +255,51 @@ jobScheduler:
   service:
     annotations: {}
     type: ClusterIP
-
+staticContent:
+  image: actian/integration-manager-static-content:2.0.5.270
+  revisionHistoryLimit: 10
+  pdb: {}
+  #minAvailable: 1
+  affinity: {}
+  livenessProbe:
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    httpGet:
+      scheme: HTTP
+      path: /
+      port: 80
+  readinessProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+    httpGet:
+      scheme: HTTP
+      path: /
+      port: 80
+  pullPolicy: IfNotPresent
+  extraInitContainers: []
+  replicaCount: 1
+  extraLabels: {}
+  podAnnotations: {}
+  resources: {}
+  nodeSelector: {}
+  service:
+    annotations: {}
+    type: ClusterIP
+  # External endpoint for integration-manager-base
+  baseEndpoint:
+  # External endpoint for integration-manager-job-execution
+  jobsEndpoint:
+  # Salesforce endpoint to redirect login
+  salesForceLoginUrl:
+  # Agent installer location - windows
+  agentInstallerUrlWindows:
+  # Agent installer location - linux
+  agentInstallerUrlLinux:
 #Prometheus
 prometheus:
   operator:
