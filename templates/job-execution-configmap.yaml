@@ -9,7 +9,7 @@ metadata:
 data:
   application.properties: |
     #job-execution specific properties
-    job.timeOut={{ .Values.jobTimeOut }}
+    server.job.wait-timeout={{ .Values.jobTimeOut }}
     {{- if .Values.jobExecution.extraConfig }}
     {{ .Values.jobExecution.extraConfig | indent 4 | trim }}
     {{- end }}
