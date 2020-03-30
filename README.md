@@ -147,7 +147,7 @@ The following table lists the configurable parameters of the integration-manager
 | `ingress.pathVersionPrefix` | version prefix if running multiple versions of IM | nil |
 | `imbaseUrl` | base url for IM for service to service communication | nil |
 | `destinationId` | default destination id | 1 |
-| `jobTimeOut` | job timeout settings | 30 |
+| `jobTimeOut` | how long the server will wait for synchronous jobs before returning | 30 |
 | `resultsQueue` | queue to use for results processor | JOB_RESULTS |
 | `datasource.url` | jdbc connection string | nil |
 | `datasource.username` | jdbc username | nil |
