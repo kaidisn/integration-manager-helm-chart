@@ -157,6 +157,22 @@ spec:
           path: /api/jobconfigs/.*/listener
           {{- end }}
         - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/agents.*)
+          {{- else }}
+          path: /api/device/code
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/agents.*)
+          {{- else }}
+          path: /api/devices/*
+          {{- end }}          
+        - backend:
             serviceName: {{ template "integration-manager.job-execution.fullname" . }}
             servicePort: 8080
           {{- if .Values.ingress.pathVersionPrefix }}
