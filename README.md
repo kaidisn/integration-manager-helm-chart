@@ -210,3 +210,4 @@ The following table lists the configurable parameters of the integration-manager
 | `encryption.keyStorePassword` | keystore password | nil |
 | `encryption.keyStore` | base64 encoded keystore file contents | nil |
 | `encryption.certificateName` | name of key in keystore | nil |
+
