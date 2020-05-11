@@ -160,7 +160,7 @@ spec:
             serviceName: {{ template "integration-manager.base.fullname" . }}
             servicePort: 8080
           {{- if .Values.ingress.pathVersionPrefix }}
-          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/agents.*)
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/device\/code.*)
           {{- else }}
           path: /api/device/code
           {{- end }}
@@ -168,7 +168,7 @@ spec:
             serviceName: {{ template "integration-manager.base.fullname" . }}
             servicePort: 8080
           {{- if .Values.ingress.pathVersionPrefix }}
-          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/agents.*)
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/devices.*)
           {{- else }}
           path: /api/devices/*
           {{- end }}          
