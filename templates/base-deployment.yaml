@@ -55,6 +55,8 @@ spec:
           value: {{ printf "%s-shared" (include "integration-manager.fullname" .) }}
         - name: IM_BASE_CONFIGMAP_NAME
           value: {{ template "integration-manager.base.fullname" . }}
+        - name: IM_BASE_LICENSE_CONFIGMAP_NAME
+          value: {{ template "integration-manager.base.fullname" . }}-dest-licenses
         {{- if .Values.repository.awsCreateEnvVar }}
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
@@ -86,6 +88,9 @@ spec:
           readOnly: true
           mountPath: /etc/secrets/amqp
         {{- end }}
+        - name: license-vol
+          readOnly: true
+          mountPath: /opt/Actian/licenses
         readinessProbe:
           {{ .Values.integrationManagerBase.readinessProbe | toYaml | indent 10 | trim }}
         livenessProbe:
@@ -117,4 +122,7 @@ spec:
             path: rabbitmq-username
           - key: rabbitmq-password
             path: rabbitmq-password
+      - name: license-vol
+        configMap:
+          name: {{ template "integration-manager.base.fullname" . }}-dest-licenses
       {{- end }}

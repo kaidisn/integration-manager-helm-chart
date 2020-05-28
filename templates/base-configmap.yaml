@@ -21,3 +21,21 @@ data:
     {{- if .Values.integrationManagerBase.extraConfig }}
     {{ .Values.integrationManagerBase.extraConfig | indent 4 | trim }}
     {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "integration-manager.base.fullname" . }}-dest-licenses
+  labels:
+    app: integration-manager
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+data:
+  {{- if .Values.integrationManagerBase.license }}
+  dc11.slc: |
+    {{ .Values.integrationManagerBase.license | toString | indent 4 | trim }}
+    {{- end }}
+    {{- if .Values.integrationManagerBase.dflicense }}
+  df6.slc: |
+    {{ .Values.integrationManagerBase.dflicense | toString | indent 4 | trim }}
+    {{- end }}
