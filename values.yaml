@@ -67,7 +67,7 @@ aggregator:
       scheme: HTTP
       path: /health
       port: 8080
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   extraInitContainers: []
   extraConfig: {}
   pdb: {}
@@ -103,7 +103,7 @@ aggregatorProcessor:
       scheme: HTTP
       path: /health
       port: 8080
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   extraInitContainers: []
   extraConfig: {}
   replicaCount: 1
@@ -136,7 +136,7 @@ integrationManagerBase:
       scheme: HTTP
       path: /health
       port: 8080
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   extraInitContainers: []
   extraConfig: {}
   replicaCount: 1
@@ -172,7 +172,7 @@ jobExecution:
       scheme: HTTP
       path: /health
       port: 8080
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   extraInitContainers: []
   extraConfig: {}
   replicaCount: 1
@@ -208,7 +208,7 @@ jobResultsProcessor:
       scheme: HTTP
       path: /health
       port: 8080
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   extraInitContainers: []
   extraConfig: {}
   replicaCount: 1
@@ -244,7 +244,7 @@ jobScheduler:
       scheme: HTTP
       path: /health
       port: 8080
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   extraInitContainers: []
   extraConfig: {}
   replicaCount: 1
@@ -280,7 +280,7 @@ staticContent:
       scheme: HTTP
       path: /
       port: 80
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   extraInitContainers: []
   replicaCount: 1
   extraLabels: {}
