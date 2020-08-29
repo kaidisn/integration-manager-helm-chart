@@ -249,6 +249,20 @@ spec:
           path: /(ui.*)
         {{- end }}
         - backend:
+            serviceName: {{ template "integration-manager.static-content.fullname" . }}
+            servicePort: 80
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(im.*)
+          {{- else }}
+          path: /im
+          {{- end }}
+        {{- if .Values.ingress.pathVersionPrefix }}
+        - backend:
+            serviceName: {{ template "integration-manager.static-content.fullname" . }}
+            servicePort: 80
+          path: /(im.*)
+        {{- end }}
+        - backend:
             serviceName: {{ template "integration-manager.job-scheduler.fullname" . }}
             servicePort: 8080
           {{- if .Values.ingress.pathVersionPrefix }}
