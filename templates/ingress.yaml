@@ -120,6 +120,14 @@ spec:
             serviceName: {{ template "integration-manager.base.fullname" . }}
             servicePort: 8080
           {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/fileloader.*)
+          {{- else }}
+          path: /api/fileloader
+          {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
           path: /{{ .Values.ingress.pathVersionPrefix }}/(oauth.*)
           {{- else }}
           path: /oauth
