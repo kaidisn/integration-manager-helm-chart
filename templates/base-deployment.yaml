@@ -83,6 +83,9 @@ spec:
         - name: secret-volume
           readOnly: true
           mountPath: /etc/secrets
+        - name: conf-volume
+          readOnly: false
+          mountPath: /etc/opt/Actian/conf
         {{- if .Values.existingRabbitSecret }}
         - name: amqp-secret-volume
           readOnly: true
@@ -122,6 +125,8 @@ spec:
             path: rabbitmq-username
           - key: rabbitmq-password
             path: rabbitmq-password
+      - name: conf-volume
+        empytDir: {}
       - name: license-vol
         configMap:
           name: {{ template "integration-manager.base.fullname" . }}-dest-licenses
