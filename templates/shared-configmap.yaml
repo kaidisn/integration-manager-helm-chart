@@ -15,7 +15,7 @@ data:
  {{- end }}
   application.properties: |
     im.base-url={{ .Values.imBaseUrl }}
-    sharedDataPath={{ .Values.sharedDataPath }}
+    sharedDataPath=/etc/opt/Actian
     job.destinationId={{ .Values.destinationId }}
     job.history.max-age=90
     job.history.max-job-count=1000
