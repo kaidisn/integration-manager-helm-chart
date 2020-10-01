@@ -143,8 +143,8 @@ data:
     spring.main.allow-bean-definition-overriding=true
 
     spring.servlet.multipart.file-size-threshold=100KB
-    spring.servlet.multipart.max-file-size=10MB
-    spring.servlet.multipart.max-request-size=10MB
+    spring.servlet.multipart.max-file-size=100MB
+    spring.servlet.multipart.max-request-size=100MB
     server.tomcat.max-http-post-size=10MB
     server.jetty.max-http-post-size=10MB
     spring.servlet.multipart.enabled=true
