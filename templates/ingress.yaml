@@ -125,6 +125,14 @@ spec:
           path: /api/fileloader
           {{- end }}
         - backend:
+            serviceName: {{ template "integration-manager.design-engine.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/connection.*)
+          {{- else }}
+          path: /api/connection
+          {{- end }}
+        - backend:
             serviceName: {{ template "integration-manager.base.fullname" . }}
             servicePort: 8080
           {{- if .Values.ingress.pathVersionPrefix }}
