@@ -1,0 +1,123 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "integration-manager.job-execution.fullname" . }}
+  labels:
+    app: integration-manager
+    component: job-execution
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.jobExecution.replicaCount }}
+  revisionHistoryLimit: {{ .Values.jobExecution.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: integration-manager
+      component: job-execution
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/sharedconfig: {{ include (print $.Template.BasePath "/shared-configmap.yaml") . | sha256sum }}
+        checksum/aggsharedconfig: {{ include (print $.Template.BasePath "/aggregator-shared-configmap.yaml") . | sha256sum }}
+        checksum/jobexecutionconfig: {{ include (print $.Template.BasePath "/job-execution-configmap.yaml") . | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        {{- if .Values.jobExecution.podAnnotations }}
+        {{ .Values.jobExecution.podAnnotations | toYaml | indent 8 | trim }}
+        {{- end }}
+      labels:
+        app: integration-manager
+        component: job-execution
+        chart: {{ template "integration-manager.chart" . }}
+        release: {{ .Release.Name }}
+        {{- if .Values.jobExecution.extraLabels }}
+        {{ .Values.jobExecution.extraLabels | toYaml | indent 8 | trim }}
+        {{- end }}
+    spec:
+      {{- if .Values.jobExecution.affinity }}
+      affinity:
+        {{ .Values.jobExecution.affinity | toYaml | indent 8 | trim }}
+      {{- end }}
+      serviceAccountName: {{ template "integration-manager.fullname" . }}
+      {{- if .Values.jobExecution.nodeSelector }}
+      nodeSelector:
+        {{ .Values.jobExecution.nodeSelector | toYaml | indent 8 | trim  }}
+      {{- end }}
+      {{- if .Values.jobExecution.extraInitContainers }}
+      initContainers:
+        {{ tpl .Values.jobExecution.extraInitContainers . | indent 6 | trim }}
+      {{- end }}
+      containers:
+      - name: job-execution
+        image: {{ .Values.jobExecution.image }}
+        imagePullPolicy: {{ .Values.jobExecution.pullPolicy }}
+        env:
+        - name: IM_SHARED_CONFIGMAP_NAME
+          value: {{ printf "%s-shared" (include "integration-manager.fullname" .) }}
+        - name: AGGREGATOR_SHARED_CONFIGMAP_NAME
+          value: {{ printf "%s-shared" (include "integration-manager.aggregator.fullname" .) }}
+        - name: JOB_EXECUTION_CONFIGMAP_NAME
+          value: {{ template "integration-manager.job-execution.fullname" . }}
+        {{- if .Values.repository.awsCreateEnvVar }}
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              key: aws-access-key
+              {{- if .Values.existingSecret }}
+              name: {{ .Values.existingSecret }}
+              {{- else }}
+              name: {{ template "integration-manager.fullname" . }}
+              {{- end }}
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key: aws-secret-key
+              {{- if .Values.existingSecret }}
+              name: {{ .Values.existingSecret }}
+              {{- else }}
+              name: {{ template "integration-manager.fullname" . }}
+              {{- end }}
+        {{- end }}
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: secret-volume
+          readOnly: true
+          mountPath: /etc/secrets
+        {{- if .Values.existingRabbitSecret }}
+        - name: amqp-secret-volume
+          readOnly: true
+          mountPath: /etc/secrets/amqp
+        {{- end }}
+        readinessProbe:
+          {{ .Values.jobExecution.readinessProbe | toYaml | indent 10 | trim }}
+        livenessProbe:
+          {{ .Values.jobExecution.livenessProbe | toYaml | indent 10 | trim }}
+        {{- if .Values.jobExecution.resources }}
+        resources:
+          {{ .Values.jobExecution.resources | toYaml | indent 10 | trim }}
+        {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
+      {{- end }}
+      {{- end }}
+      volumes:
+      - name: secret-volume
+        secret:
+          {{- if .Values.existingSecret }}
+          secretName: {{ .Values.existingSecret }}
+          {{- else }}
+          secretName: {{ template "integration-manager.fullname" . }}
+          {{- end }}
+      {{- if .Values.existingRabbitSecret }}
+      - name: amqp-secret-volume
+        secret:
+          secretName: {{ .Values.existingRabbitSecret }}
+          items:
+          - key: rabbitmq-username
+            path: rabbitmq-username
+          - key: rabbitmq-password
+            path: rabbitmq-password
+      {{- end }}
