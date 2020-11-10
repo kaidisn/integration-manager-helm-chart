@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "integration-manager.design-engine.fullname" . }}
+  {{- if .Values.designEngine.service.annotations }}
+  annotations:
+    {{ .Values.designEngine.service.annotations  | toYaml | indent 4 | trim }}
+  {{- end }}
+  labels:
+    app: integration-manager
+    component: design-engine
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+spec:
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: integration-manager
+    component: design-engine
+    release: {{ .Release.Name }}
+  type: "{{ .Values.designEngine.service.type }}"
