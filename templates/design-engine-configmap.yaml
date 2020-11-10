@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "integration-manager.design-engine.fullname" . }}
+  labels:
+    app: integration-manager
+    chart: {{ template "integration-manager.chart" . }}
+    release: {{ .Release.Name }}
+data:
+  application.properties: |
+    #design-engine secific properties
+    {{- if .Values.designEngine.extraConfig }}
+    {{ .Values.designEngine.extraConfig | indent 4 | trim }}
+    {{- end }}
