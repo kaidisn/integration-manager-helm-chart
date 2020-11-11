@@ -81,6 +81,9 @@ spec:
         - name: secret-volume
           readOnly: true
           mountPath: /etc/secrets
+        - name: license-vol
+          readOnly: true
+          mountPath: /opt/Actian/volume
         {{- if .Values.existingRabbitSecret }}
         - name: amqp-secret-volume
           readOnly: true
@@ -109,6 +112,9 @@ spec:
           secretName: {{ template "integration-manager.fullname" . }}
           {{- end }}
       {{- if .Values.existingRabbitSecret }}
+      - name: license-vol
+        configMap:
+          name: {{ template "integration-manager-worker.fullname" . }}-license
       - name: amqp-secret-volume
         secret:
           secretName: {{ .Values.existingRabbitSecret }}
