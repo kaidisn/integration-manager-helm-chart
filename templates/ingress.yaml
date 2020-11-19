@@ -187,7 +187,7 @@ spec:
           path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/devices.*)
           {{- else }}
           path: /api/devices/*
-          {{- end }}          
+          {{- end }}
         - backend:
             serviceName: {{ template "integration-manager.job-execution.fullname" . }}
             servicePort: 8080
@@ -269,6 +269,20 @@ spec:
             serviceName: {{ template "integration-manager.static-content.fullname" . }}
             servicePort: 80
           path: /(im.*)
+        {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.static-content.fullname" . }}
+            servicePort: 80
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(info.*)
+          {{- else }}
+          path: /info
+          {{- end }}
+        {{- if .Values.ingress.pathVersionPrefix }}
+        - backend:
+            serviceName: {{ template "integration-manager.static-content.fullname" . }}
+            servicePort: 80
+          path: /(info.*)
         {{- end }}
         - backend:
             serviceName: {{ template "integration-manager.job-scheduler.fullname" . }}

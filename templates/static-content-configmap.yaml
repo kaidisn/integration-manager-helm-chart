@@ -33,4 +33,5 @@ data:
       "BASE_URL_MACRO": "{{ .Values.staticContent.baseEndpoint }}/api",
       "BASE_URL_DESTINATION": "{{ .Values.staticContent.baseEndpoint }}/api"
     }
-
+  whitelist.json: |
+    {{ .Values.staticContent.ipWhiteList }}

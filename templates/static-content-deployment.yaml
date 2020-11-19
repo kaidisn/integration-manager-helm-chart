@@ -54,6 +54,11 @@ spec:
         - name: app-config
           readOnly: true
           mountPath: /opt/Actian/volume
+        {{- if .Values.staticContent.ipWhiteList }}
+        - name: whitelist-config
+          readOnly: true
+          mountPath: /usr/share/nginx/html/info/
+        {{- end }}
         readinessProbe:
           {{ .Values.staticContent.readinessProbe | toYaml | indent 10 | trim }}
         livenessProbe:
@@ -72,3 +77,11 @@ spec:
       - name: app-config
         configMap:
           name: {{ template "integration-manager.static-content.fullname" . }}
+      {{- if .Values.staticContent.ipWhiteList }}
+      - name: whitelist-config
+        configMap:
+          name: {{ template "integration-manager.static-content.fullname" . }}
+          items:
+            - key: whitelist.json
+              path: whitelist.json
+      {{ end }}
