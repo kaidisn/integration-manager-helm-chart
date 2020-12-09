@@ -57,6 +57,8 @@ spec:
           value: {{ template "integration-manager.base.fullname" . }}
         - name: IM_BASE_LICENSE_CONFIGMAP_NAME
           value: {{ template "integration-manager.base.fullname" . }}-dest-licenses
+        - name: "GOOGLE_APPLICATION_CREDENTIALS"
+          value: /opt/Actian/conf/gcp/google-storage-key.json
         {{- if .Values.repository.awsCreateEnvVar }}
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
@@ -91,6 +93,8 @@ spec:
         - name: license-vol
           readOnly: true
           mountPath: /opt/Actian/licenses
+        - name: googlestore-cert
+          mountPath: /opt/Actian/conf/gcp/
         readinessProbe:
           {{ .Values.integrationManagerBase.readinessProbe | toYaml | indent 10 | trim }}
         livenessProbe:
@@ -113,6 +117,12 @@ spec:
           {{- else }}
           secretName: {{ template "integration-manager.fullname" . }}
           {{- end }}
+      - name: googlestore-cert
+        secret:
+          secretName: googlestore-cert
+          items:
+          - key: google-storage-key.json
+            path: google-storage-key.json
       {{- if .Values.existingRabbitSecret }}
       - name: amqp-secret-volume
         secret:
