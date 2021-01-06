@@ -51,6 +51,10 @@ spec:
         image: {{ .Values.integrationManagerBase.image }}
         imagePullPolicy: {{ .Values.integrationManagerBase.pullPolicy }}
         env:
+        {{- if .Values.integrationManagerBase.jvmOpts }}
+        - name: JVM_OPTS
+          value: {{ .Values.integrationManagerBase.jvmOpts }}
+        {{- end }}  
         - name: IM_SHARED_CONFIGMAP_NAME
           value: {{ printf "%s-shared" (include "integration-manager.fullname" .) }}
         - name: IM_BASE_CONFIGMAP_NAME
