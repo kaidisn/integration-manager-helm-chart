@@ -139,7 +139,7 @@ integrationManagerBase:
   pullPolicy: IfNotPresent
   extraInitContainers: []
   extraConfig: {}
-  jvmOpts: ""
+  javaOpts: ""
   replicaCount: 1
   extraLabels: {}
   podAnnotations: {}
