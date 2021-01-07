@@ -48,6 +48,14 @@ spec:
             serviceName: {{ template "integration-manager.base.fullname" . }}
             servicePort: 8080
           {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/google-token-exchange.*)
+          {{- else }}
+          path: /api/google-token-exchange
+          {{- end }}  
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
           path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/account.*)
           {{- else }}
           path: /api/account
