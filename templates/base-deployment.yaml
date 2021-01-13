@@ -51,6 +51,10 @@ spec:
         image: {{ .Values.integrationManagerBase.image }}
         imagePullPolicy: {{ .Values.integrationManagerBase.pullPolicy }}
         env:
+        {{- if .Values.integrationManagerBase.javaOpts }}
+        - name: JAVA_OPTS
+          value: {{ .Values.integrationManagerBase.javaOpts }}
+        {{- end }}
         {{- if .Values.repository.awsCreateEnvVar }}
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
