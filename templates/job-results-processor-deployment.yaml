@@ -50,12 +50,8 @@ spec:
       - name: job-results-processor
         image: {{ .Values.jobResultsProcessor.image }}
         imagePullPolicy: {{ .Values.jobResultsProcessor.pullPolicy }}
-        env:
-        - name: IM_SHARED_CONFIGMAP_NAME
-          value: {{ printf "%s-shared" (include "integration-manager.fullname" .) }}
-        - name: JOB_RESULTS_PROCESSOR_CONFIGMAP_NAME
-          value: {{ template "integration-manager.job-results-processor.fullname" . }}
         {{- if .Values.repository.awsCreateEnvVar }}
+        env:
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:
@@ -78,6 +74,14 @@ spec:
         ports:
         - containerPort: 8080
         volumeMounts:
+        - name: im-shared-volume
+          readOnly: true
+          mountPath: /etc/config/shared.properties
+          subPath: application.properties
+        - name: job-results-volume
+          readOnly: true
+          mountPath: /etc/config/application.properties
+          subPath: application.properties
         - name: secret-volume
           readOnly: true
           mountPath: /etc/secrets
@@ -101,6 +105,12 @@ spec:
       {{- end }}
       {{- end }}
       volumes:
+      - name: im-shared-volume
+        configMap:
+          name: {{ template "integration-manager.fullname" . }}-shared
+      - name: job-results-volume
+        configMap:
+          name:  {{ template "integration-manager.job-results-processor.fullname" . }}
       - name: secret-volume
         secret:
           {{- if .Values.existingSecret }}

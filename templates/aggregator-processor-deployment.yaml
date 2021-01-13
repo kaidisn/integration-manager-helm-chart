@@ -51,14 +51,8 @@ spec:
       - name: aggregator-processor
         image: {{ .Values.aggregatorProcessor.image }}
         imagePullPolicy: {{ .Values.aggregatorProcessor.pullPolicy }}
-        env:
-        - name: IM_SHARED_CONFIGMAP_NAME
-          value: {{ printf "%s-shared" (include "integration-manager.fullname" .) }}
-        - name: AGGREGATOR_SHARED_CONFIGMAP_NAME
-          value: {{ printf "%s-shared" (include "integration-manager.aggregator.fullname" .) }}
-        - name: AGGREGATOR_PROCESSOR_CONFIGMAP_NAME
-          value: {{ template "integration-manager.aggregator-processor.fullname" . }}
         {{- if .Values.repository.awsCreateEnvVar }}
+        env:
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:
@@ -81,6 +75,18 @@ spec:
         ports:
         - containerPort: 8080
         volumeMounts:
+        - name: im-shared-volume
+          readOnly: true
+          mountPath: /etc/config/shared.properties
+          subPath: application.properties
+        - name: aggregator-shared-volume
+          readOnly: true
+          mountPath: /etc/config/aggregator-config.yml
+          subPath: aggregator-config.yml
+        - name: aggregator-volume
+          readOnly: true
+          mountPath: /etc/config/aggregator.properties
+          subPath: aggregator.properties
         - name: secret-volume
           readOnly: true
           mountPath: /etc/secrets
@@ -102,6 +108,15 @@ spec:
       {{- end }}
       {{- end }}
       volumes:
+      - name: im-shared-volume
+        configMap:
+          name: {{ template "integration-manager.fullname" . }}-shared
+      - name: aggregator-shared-volume
+        configMap:
+          name: {{ template "integration-manager.aggregator.fullname" . }}-shared
+      - name: aggregator-volume
+        configMap:
+          name: {{ template "integration-manager.aggregator-processor.fullname" . }}
       - name: secret-volume
         secret:
           {{- if .Values.existingSecret }}
