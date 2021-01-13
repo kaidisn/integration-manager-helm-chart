@@ -51,8 +51,8 @@ spec:
       - name: aggregator
         image: {{ .Values.aggregator.image }}
         imagePullPolicy: {{ .Values.aggregator.pullPolicy }}
-        {{- if .Values.repository.awsCreateEnvVar }}
         env:
+        {{- if .Values.repository.awsCreateEnvVar }}
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:

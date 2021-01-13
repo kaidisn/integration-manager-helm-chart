@@ -51,8 +51,8 @@ spec:
       - name: job-execution
         image: {{ .Values.jobExecution.image }}
         imagePullPolicy: {{ .Values.jobExecution.pullPolicy }}
-        {{- if .Values.repository.awsCreateEnvVar }}
         env:
+        {{- if .Values.repository.awsCreateEnvVar }}
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:

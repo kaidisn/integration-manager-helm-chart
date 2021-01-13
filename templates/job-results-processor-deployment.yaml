@@ -50,8 +50,8 @@ spec:
       - name: job-results-processor
         image: {{ .Values.jobResultsProcessor.image }}
         imagePullPolicy: {{ .Values.jobResultsProcessor.pullPolicy }}
-        {{- if .Values.repository.awsCreateEnvVar }}
         env:
+        {{- if .Values.repository.awsCreateEnvVar }}
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:
