@@ -54,13 +54,7 @@ spec:
         {{- if .Values.integrationManagerBase.javaOpts }}
         - name: JAVA_OPTS
           value: {{ .Values.integrationManagerBase.javaOpts }}
-        {{- end }}  
-        - name: IM_SHARED_CONFIGMAP_NAME
-          value: {{ printf "%s-shared" (include "integration-manager.fullname" .) }}
-        - name: IM_BASE_CONFIGMAP_NAME
-          value: {{ template "integration-manager.base.fullname" . }}
-        - name: IM_BASE_LICENSE_CONFIGMAP_NAME
-          value: {{ template "integration-manager.base.fullname" . }}-dest-licenses
+        {{- end }}
         {{- if .Values.repository.awsCreateEnvVar }}
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
@@ -84,6 +78,14 @@ spec:
         ports:
         - containerPort: 8080
         volumeMounts:
+        - name: im-shared-volume
+          readOnly: true
+          mountPath: /etc/config/shared.properties
+          subPath: application.properties
+        - name: im-volume
+          readOnly: true
+          mountPath: /etc/config/application.properties
+          subPath: application.properties
         - name: secret-volume
           readOnly: true
           mountPath: /etc/secrets
@@ -110,6 +112,12 @@ spec:
       {{- end }}
       {{- end }}
       volumes:
+      - name: im-shared-volume
+        configMap:
+          name: {{ template "integration-manager.fullname" . }}-shared
+      - name: im-volume
+        configMap:
+          name: {{ template "integration-manager.base.fullname" . }}
       - name: secret-volume
         secret:
           {{- if .Values.existingSecret }}
@@ -126,7 +134,7 @@ spec:
             path: rabbitmq-username
           - key: rabbitmq-password
             path: rabbitmq-password
+      {{- end }}
       - name: license-vol
         configMap:
           name: {{ template "integration-manager.base.fullname" . }}-dest-licenses
-      {{- end }}
