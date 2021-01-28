@@ -300,6 +300,14 @@ spec:
           {{- else }}
           path: /api/jobconfigs/.*/schedule
           {{- end }}
+        - backend:
+            serviceName: {{ template "integration-manager.base.fullname" . }}
+            servicePort: 8080
+          {{- if .Values.ingress.pathVersionPrefix }}
+          path: /{{ .Values.ingress.pathVersionPrefix }}/(api\/downloads.*)
+          {{- else }}
+          path: /api/downloads
+          {{- end }}
         # Expose this when ready
 #        - backend:
 #            serviceName: {{ template "integration-manager.base.fullname" . }}
